@@ -5,7 +5,7 @@ module "iam" {
 }
 
 module "start_lambda" {
-  source = "./modules/lambda"
+  source = "./modules/lambda_function"
   lambda_name = "start-ec2-instance"
   instance_ids = var.instance_ids
   lambda_role_arn = module.iam_role.lambda_exec_role_arn
@@ -13,7 +13,7 @@ module "start_lambda" {
 }
 
 module "stop_lambda" {
-  source = "./modules/lambda"
+  source = "./modules/lambda_function"
   lambda_name = "stop-ec2-instance"
   instance_ids = var.instance_ids
   lambda_role_arn = module.iam_role.lambda_exec_role_arn
