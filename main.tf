@@ -34,10 +34,3 @@ module "stop_ec2_schedule" {
   schedule_expression = "cron(0/3 * * * ? *)"
 }
 
-output "start_lambda_arn" {
-  value = module.start_ec2_lambda.lambda_function_arn
-}
-
-output "stop_lambda_arn" {
-  value = module.stop_ec2_lambda.lambda_function_arn
-}
