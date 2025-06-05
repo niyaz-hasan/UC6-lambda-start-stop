@@ -1,38 +1,63 @@
-provider "aws" {
-  region = var.region
+module "iam" {
+  source = "./modules/iam"
+  name   = "ec2_scheduler_lambda"
 }
 
-module "iam_role" {
-  source = "./modules/iam_role"
+data "archive_file" "lambda_zip" {
+  type        = "zip"
+  source_file = "${path.module}/lambda_function/ec2_control.py"
+  output_path = "${path.module}/lambda_function/ec2_control.zip"
 }
 
-module "start_ec2_lambda" {
-  source = "./modules/lambda"
-  lambda_name = "start-ec2-instance"
-  instance_ids = var.instance_ids
-  lambda_role_arn = module.iam_role.lambda_exec_role_arn
-  source_path     = "${path.module}/lambda/start-ec2-instance.py"
+module "lambda_stop" {
+  source         = "./modules/lambda"
+  lambda_zip     = data.archive_file.lambda_zip.output_path
+  function_name  = "ec2-stop-lambda"
+  handler        = "ec2_control.lambda_handler"
+  role_arn       = module.iam.role_arn
+  instance_ids   = var.ec2_instance_ids
+  ec2_action     = "stop"
 }
 
-module "stop_ec2_lambda" {
-  source = "./modules/lambda"
-  lambda_name = "stop-ec2-instance"
-  instance_ids = var.instance_ids
-  lambda_role_arn = module.iam_role.lambda_exec_role_arn
-  source_path     = "${path.module}/lambda/stop-ec2-instance.py"
+module "lambda_start" {
+  source         = "./modules/lambda"
+  lambda_zip     = data.archive_file.lambda_zip.output_path
+  function_name  = "ec2-start-lambda"
+  handler        = "ec2_control.lambda_handler"
+  role_arn       = module.iam.role_arn
+  instance_ids   = var.ec2_instance_ids
+  ec2_action     = "start"
 }
 
-module "start_ec2_schedule" {
-  source = "./modules/cloudwatch_event"
-  lambda_function_name = module.start_ec2_lambda.lambda_function_name
-  lambda_function_arn  = module.start_ec2_lambda.lambda_function_arn
-  schedule_expression = "cron(0/2 * * * ? *)"
+module "stop_schedule" {
+  source          = "./modules/eventbridge"
+  name            = "stop-ec2-schedule"
+  cron_expression = "cron(0 18 * * ? *)" # 6 PM UTC
+  lambda_arn      = module.lambda_stop.this.arn
+  lambda_name     = module.lambda_stop.this.function_name
 }
 
-module "stop_ec2_schedule" {
-  source = "./modules/cloudwatch_event"
-  lambda_function_name = module.stop_ec2_lambda.lambda_function_name
-  lambda_function_arn  = module.start_ec2_lambda.lambda_function_arn
-  schedule_expression = "cron(0/3 * * * ? *)"
+module "start_schedule" {
+  source          = "./modules/eventbridge"
+  name            = "start-ec2-schedule"
+  cron_expression = "cron(0 6 * * ? *)" # 6 AM UTC
+  lambda_arn      = module.lambda_start.this.arn
+  lambda_name     = module.lambda_start.this.function_name
 }
 
+
+output "start_lambda_function_name" {
+  value = module.lambda_start.this.function_name
+}
+
+output "stop_lambda_function_name" {
+  value = module.lambda_stop.this.function_name
+}
+
+output "start_event_rule" {
+  value = module.start_schedule.event_rule_name
+}
+
+output "stop_event_rule" {
+  value = module.stop_schedule.event_rule_name
+}
