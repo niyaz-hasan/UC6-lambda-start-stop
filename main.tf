@@ -8,7 +8,7 @@ module "start_lambda" {
   source = "./modules/lambda_function"
   lambda_name = "start-ec2-instance"
   instance_ids = var.instance_ids
-  lambda_role_arn = module.iam_role.lambda_exec_role_arn
+  lambda_role_arn = module.iam.lambda_role_arn
   source_path     = "${path.module}/lambda/start_instance.py"
 }
 
@@ -16,7 +16,7 @@ module "stop_lambda" {
   source = "./modules/lambda_function"
   lambda_name = "stop-ec2-instance"
   instance_ids = var.instance_ids
-  lambda_role_arn = module.iam_role.lambda_exec_role_arn
+  lambda_role_arn = module.iam.lambda_role_arn
   source_path     = "${path.module}/lambda/stop_instance.py"
 }
 
