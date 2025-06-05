@@ -32,7 +32,7 @@ module "lambda_start" {
 module "stop_schedule" {
   source          = "./modules/eventbridge"
   name            = "stop-ec2-schedule"
-  cron_expression = "cron(0/6 * * * ? *)" # 6 PM UTC
+  cron_expression = "cron(0 17 ? * MON-FRI *)" # 6 PM UTC
   lambda_arn      = module.lambda_stop.this.arn
   lambda_name     = module.lambda_stop.this.function_name
 }
@@ -40,7 +40,7 @@ module "stop_schedule" {
 module "start_schedule" {
   source          = "./modules/eventbridge"
   name            = "start-ec2-schedule"
-  cron_expression = "cron(0/5 * * * ? *)" # 6 AM UTC
+  cron_expression = "cron(0 8 ? * MON-FRI *)" # 6 AM UTC
   lambda_arn      = module.lambda_start.this.arn
   lambda_name     = module.lambda_start.this.function_name
 }
