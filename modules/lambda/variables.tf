@@ -13,7 +13,7 @@ variable "instance_ids" {
   type        = string
 }
 
-variable "lambda_zip" {
+variable "source_path" {
   description = "Path to the Lambda zip file"
   type        = string
   default     = "path/to/your/lambda_function.zip"

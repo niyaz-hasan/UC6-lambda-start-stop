@@ -5,13 +5,21 @@ resource "aws_lambda_function" "ec2_lambda" {
   handler       = "${var.lambda_name}.lambda_handler"
   timeout       = 60
 
-  filename      = var.lambda_zip
+  filename      = data.archive_file.lambda_zip.output_path
+  source_code_hash = data.archive_file.lambda_zip.output_base64sha256
 
   environment {
     variables = {
       INSTANCE_IDS = var.instance_ids
     }
   }
+}
+
+
+data "archive_file" "lambda_zip" {
+  type        = "zip"
+  source_file = var.source_path
+  output_path = "${path.module}/lambda.zip"
 }
 
 output "lambda_function_arn" {
