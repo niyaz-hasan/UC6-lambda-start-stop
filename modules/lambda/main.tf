@@ -1,31 +1,21 @@
-resource "aws_lambda_function" "ec2_lambda" {
-  function_name = var.lambda_name
-  role          = var.lambda_role_arn
-  runtime       = "python3.8"
-  handler       = "${var.lambda_name}.lambda_handler"
-  timeout       = 60
-
-  filename      = data.archive_file.lambda_zip.output_path
-  source_code_hash = data.archive_file.lambda_zip.output_base64sha256
+resource "aws_lambda_function" "this" {
+  filename         = var.lambda_zip
+  function_name    = var.function_name
+  handler          = var.handler
+  runtime          = "python3.12"
+  role             = var.role_arn
+  timeout          = 30
+  source_code_hash = filebase64sha256(var.lambda_zip)
 
   environment {
     variables = {
       INSTANCE_IDS = var.instance_ids
+      EC2_ACTION   = var.ec2_action
     }
   }
 }
 
-
-data "archive_file" "lambda_zip" {
-  type        = "zip"
-  source_file = var.source_path
-  output_path = "${path.module}/lambda.zip"
-}
-
-output "lambda_function_arn" {
-  value = aws_lambda_function.ec2_lambda.arn
-}
-
-output "lambda_function_name" {
-  value = aws_lambda_function.ec2_lambda.function_name
+output "this" {
+  description = "Lambda function resource"
+  value       = aws_lambda_function.this
 }

@@ -1,20 +1,36 @@
-variable "lambda_name" {
-  description = "The name of the Lambda function"
+variable "lambda_zip" {
+  description = "Path to the Lambda deployment zip file"
   type        = string
 }
 
-variable "lambda_role_arn" {
-  description = "The ARN of the IAM role assigned to the Lambda function"
+variable "function_name" {
+  description = "Name of the Lambda function"
+  type        = string
+}
+
+variable "handler" {
+  description = "Lambda handler"
+  type        = string
+  default     = "ec2_control.lambda_handler"
+}
+
+variable "runtime" {
+  description = "Lambda runtime"
+  type        = string
+  default     = "python3.12"
+}
+
+variable "role_arn" {
+  description = "IAM role ARN for the Lambda function"
   type        = string
 }
 
 variable "instance_ids" {
-  description = "Comma-separated list of EC2 instance IDs"
+  description = "Comma-separated EC2 instance IDs"
   type        = string
 }
 
-variable "source_path" {
-  description = "Path to the Lambda zip file"
+variable "ec2_action" {
+  description = "Action to perform: start or stop"
   type        = string
-  default     = "path/to/your/lambda_function.zip"
 }
