@@ -24,13 +24,13 @@ module "stop_ec2_lambda" {
 
 module "start_ec2_schedule" {
   source = "./modules/cloudwatch_event"
-  lambda_function_arn = module.start_ec2_lambda.lambda_function_arn
+  lambda_function_name = module.start_ec2_lambda.lambda_function_name
   schedule_expression = "cron(0/2 * * * ? *)"
 }
 
 module "stop_ec2_schedule" {
   source = "./modules/cloudwatch_event"
-  lambda_function_arn = module.stop_ec2_lambda.lambda_function_arn
+  lambda_function_name = module.stop_ec2_lambda.lambda_function_name
   schedule_expression = "cron(0/3 * * * ? *)"
 }
 

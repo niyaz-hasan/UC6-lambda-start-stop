@@ -25,3 +25,7 @@ data "archive_file" "lambda_zip" {
 output "lambda_function_arn" {
   value = aws_lambda_function.ec2_lambda.arn
 }
+
+output "lambda_function_name" {
+  value = aws_lambda_function.ec2_lambda.name
+}

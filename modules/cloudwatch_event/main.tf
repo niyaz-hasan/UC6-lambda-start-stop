@@ -1,5 +1,5 @@
 resource "aws_cloudwatch_event_rule" "schedule" {
-  name        = "schedule-${var.lambda_function_arn}"
+  name        = "schedule-${var.lambda_function_name}"
   description = "Schedule for Lambda invocation"
   schedule_expression = var.schedule_expression
 }

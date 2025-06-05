@@ -1,4 +1,4 @@
-variable "lambda_function_arn" {
+variable "lambda_function_name" {
   description = "The ARN of the Lambda function to trigger"
   type        = string
 }
