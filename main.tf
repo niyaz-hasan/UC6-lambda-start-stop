@@ -1,38 +1,41 @@
-provider "aws" {
-  region = var.region
+
+module "iam" {
+  source      = "./modules/iam_role"
+  name_prefix = "company-ec2"
 }
 
-module "iam_role" {
-  source = "./modules/iam_role"
+module "start_lambda" {
+  source           = "./modules/lambda_function"
+  name_prefix      = "company-ec2"
+  function_suffix  = "start"
+  filename         = "start_instance.zip"
+  handler          = "start_instance.lambda_handler"
+  lambda_role_arn  = module.iam.lambda_role_arn
 }
 
-module "start_ec2_lambda" {
-  source = "./modules/lambda"
-  lambda_name = "start-ec2-instance"
-  instance_ids = var.instance_ids
-  lambda_role_arn = module.iam_role.lambda_exec_role_arn
-  source_path     = "${path.module}/lambda/start-ec2-instance.py"
+module "stop_lambda" {
+  source           = "./modules/lambda_function"
+  name_prefix      = "company-ec2"
+  function_suffix  = "stop"
+  filename         = "stop_instance.zip"
+  handler          = "stop_instance.lambda_handler"
+  lambda_role_arn  = module.iam.lambda_role_arn
 }
 
-module "stop_ec2_lambda" {
-  source = "./modules/lambda"
-  lambda_name = "stop-ec2-instance"
-  instance_ids = var.instance_ids
-  lambda_role_arn = module.iam_role.lambda_exec_role_arn
-  source_path     = "${path.module}/lambda/stop-ec2-instance.py"
+module "start_event" {
+  source       = "./modules/cloudwatch_event"
+  name_prefix  = "company-ec2"
+  event_type   = "start"
+  schedule     = var.start_schedule
+  lambda_arn   = module.start_lambda.lambda_arn
+  lambda_name  = module.start_lambda.lambda_name
 }
 
-module "start_ec2_schedule" {
-  source = "./modules/cloudwatch_event"
-  lambda_function_name = module.start_ec2_lambda.lambda_function_name
-  lambda_function_arn  = module.start_ec2_lambda.lambda_function_arn
-  schedule_expression = "cron(0/2 * * * ? *)"
+module "stop_event" {
+  source       = "./modules/cloudwatch_event"
+  name_prefix  = "company-ec2"
+  event_type   = "stop"
+  schedule     = var.stop_schedule
+  lambda_arn   = module.stop_lambda.lambda_arn
+  lambda_name  = module.stop_lambda.lambda_name
 }
-
-module "stop_ec2_schedule" {
-  source = "./modules/cloudwatch_event"
-  lambda_function_name = module.stop_ec2_lambda.lambda_function_name
-  lambda_function_arn  = module.start_ec2_lambda.lambda_function_arn
-  schedule_expression = "cron(0/3 * * * ? *)"
-}
-

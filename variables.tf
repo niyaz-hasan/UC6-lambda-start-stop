@@ -1,13 +1,8 @@
-# Root level variables (variables.tf)
 
-variable "region" {
-  description = "AWS region"
-  type        = string
-  default     = "us-east-1"
+variable "start_schedule" {
+  default = "cron(0 3 * * ? *)"
 }
 
-variable "instance_ids" {
-  description = "Comma-separated list of EC2 instance IDs"
-  type        = string
-  default     = "i-0e193b703bd005734"
+variable "stop_schedule" {
+  default = "cron(0 12 * * ? *)"
 }
