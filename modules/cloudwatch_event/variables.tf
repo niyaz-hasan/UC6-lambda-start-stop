@@ -1,5 +1,3 @@
-# CloudWatch Event module variables (modules/cloudwatch_event/variables.tf)
-
 variable "lambda_function_arn" {
   description = "The ARN of the Lambda function to trigger"
   type        = string
