@@ -5,21 +5,19 @@ module "iam" {
 }
 
 module "start_lambda" {
-  source           = "./modules/lambda_function"
-  name_prefix      = "company-ec2"
-  function_suffix  = "start"
-  filename         = "start_instance.zip"
-  handler          = "start_instance.lambda_handler"
-  lambda_role_arn  = module.iam.lambda_role_arn
+  source = "./modules/lambda"
+  lambda_name = "start-ec2-instance"
+  instance_ids = var.instance_ids
+  lambda_role_arn = module.iam_role.lambda_exec_role_arn
+  source_path     = "${path.module}/lambda/start_instance.py"
 }
 
 module "stop_lambda" {
-  source           = "./modules/lambda_function"
-  name_prefix      = "company-ec2"
-  function_suffix  = "stop"
-  filename         = "stop_instance.zip"
-  handler          = "stop_instance.lambda_handler"
-  lambda_role_arn  = module.iam.lambda_role_arn
+  source = "./modules/lambda"
+  lambda_name = "stop-ec2-instance"
+  instance_ids = var.instance_ids
+  lambda_role_arn = module.iam_role.lambda_exec_role_arn
+  source_path     = "${path.module}/lambda/stop_instance.py"
 }
 
 module "start_event" {
