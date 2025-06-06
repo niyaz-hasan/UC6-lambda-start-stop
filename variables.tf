@@ -1,7 +1,7 @@
 variable "ec2_instance_ids" {
   description = "Comma-separated list of EC2 instance IDs"
   type        = string
-  default     = "i-0e193b703bd005734"
+  default     = "i-02d143846751d6a81"
 }
 
 variable "aws_region" {
